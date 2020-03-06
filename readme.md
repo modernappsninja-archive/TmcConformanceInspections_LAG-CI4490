@@ -1,199 +1,163 @@
-**THIS GUIDE IS UNDER DEVELOPMENT AND MAY NOT BE FUNCTIONAL - THIS MESSAGE WILL BE REMOVED WHEN THE GUIDE IS READY FOR USE. IF YOU HAVE ANY QUESTIONS, PLEASE OPEN AN ISSUE TICKET. IF YOU WOULD LIKE TO CONTRIBUTE TO THIS GUIDE, PLEASE SUBMIT A PR WITH YOUR UPDATES, THANK YOU.** 
-
-**PLEASE DO NOT REMOVE ANYTHING ABOVE THIS LINE UNTIL YOUR GUIDE IS COMPLETE AND VALIDATED FOR END USER CONSUMPTION** 
-
-## ModernApps.ninja starter guide template 
-
-Please reference the content below for formatting examples, and replace with your desired content.
-# Lab Excercise Page Syle Template - 1st level - Main Header
+# Tanzu Mission Control - Conformance Inspections Lab Guide
 
 **Contents:**
 
-- [Step 1: ]()
-- [Step 2: ]()
-- [Step 3: ]()
-- [Step 4: ]()
-- [Step 5: ]()
-- [Next Steps]()
+Insert TOC Here
 
-## Step 1: 2nd level header, steps often have multiple substeps and subsections
+## Introduction
 
-1.1 Uses dotted decimal numbering. This sentence 1.1 is a substep of step 1. Use a single decimal format for each substep that itself does not have other substeps. For substeps that have their own substeps, use a subsection format shown in steps 1.2 and 1.3
+This document is intended to provide a guide to exploring basic usages of inspection in TMC through its UI.
 
-This format is intended to find an optimal balance of usability for the user and flexibility and simplicity for content developers. As this paragraph demonstrates, its perfectly fine to add prose inline within each step as needed to sufficiently explain the step, keeping in mind that it is crucial for user experience to keep the document streamlined, and so recommend liberal use of hidden and expandable section blocks as shown below
+### Before Attempting This Lab:
 
-<details><summary>Click to expand</summary>
+This lab has a completion difficulty of `Partial`. Please see the rubrik below for an explanation of lab completion difficulty rankings
 
-If you have any long text sections such as detailed explanations, code examples, configuration files, etc, please wrap them in expanding sections as shown here.
+Lab Completion Difficulty Rankings:
 
-Keep in mind this template is optimized for Lab Exercise guides which generally include lots of tasks that the reader needs to do. 
+- Difficulty Levels:
+  - `Complete`
+    - A lab guide with a difficulty of `Complete` includes comprehensive, click-by-click instructions, usually with a screenshot for every command entered. Complete labs must be associated with an online lab environment fully prepped to execute the exact instructions provided in the lab guide. Most users could successfully execute the steps in a `Complete` lab guide, even if they do not have expertise in the subject, by following detailed instructions.
+  - `Partial`
+    - A lab guide with a difficulty of `Partial` includes full instructions to complete the exercise, with enough detail to where a user with moderate experience in the subject matter could complete the exercise. `Partial` lab guides provide a level of detail similar gto most typical technical documentation, where the user is expected to be able to configure their lab environment with dependencies required for the exercise, and to contextualize general instructions to the users own environment. 
+  - `Challenge`
+    - A lab guide with a difficulty of `Challenge` is designed to be technically challenging for the guide's target audience to complete. `Challenge` lab guides do not include comprehensive instructions, and intentionally leave out details required to complete exercises as a challenge or test of the users proficiency in a topic.
 
-Also please place all images inside expanding blocks, further details about images will be shown in step 1.4 below
+### Environment Pre-Requisites
 
-</details>
-<br/>
+The demo in this document is conducted with a development TMC stack in which a Kind cluster is attached. 
 
-1.2 Minor subsection headers
+In order to demonstrate starting and viewing an inspection a kind cluster (demo-cluster) is attached under the default cluster group. 
 
-1.2.1 if you have a substep that includes its own substeps, you need a subsection. This style guide offers two options for subsection handling, the minor subsection format shown here in step 1.2, and the major subsection format shown in step 1.3
-
-### 1.3 Major Subsection Headers
-
-Use major subsection headers whenever they are a better fit for the flow of your document. It is fine to use both minor and major subsection styles within the same document, so long as the overall flow and organization of the document make sense to the reader
-
-The rest of the text below is sample text copied from a lab exercise guide that uses this style
-
-1.3.1 Make a copy of the `frontend-deployment_all_k8s.yaml` file, save it as `frontend-deployment_ingress.yaml`
-
-Example:
-`cp frontend-deployment_all_k8s.yaml frontend-deployment_ingress.yaml`
-
-1.3.2 Get the URL of your smarcluster with the following command, be sure to replace 'afewell-cluster' with the name of your cluster:
-
-``` bash
-vke cluster show afewell-cluster | grep Address
-```
-
-<details><summary>Screenshot 1.3.2</summary>
-<img src="media/2018-10-20-15-45-19.png">
-</details>
-<br/>
-
-1.3.3 Edit the `frontend-deployment_ingress.yaml` file, near the bottom of the file in the ingress spec section, change the value for spec.rules.host to URL for your smartcluster as shown in the following snippet:
-
-NOTE: Be sure to replace the URL shown here with the URL for your own smartcluster
-
-``` bash
-spec:
-  rules:
-  - host: afewell-cluster-69fc65f8-d37d-11e8-918b-0a1dada1e740.fa2c1d78-9f00-4e30-8268-4ab81862080d.vke-user.com
-    http:
-      paths:
-      - backend:
-          serviceName: planespotter-frontend
-          servicePort: 80
-```
-
-<details><summary>Click to expand to see the full contents of frontend-deployment_ingress.yaml</summary>
-
-When reviewing the file contents below, observe that it includes a ClusterIP service spec which only provides an IP address that is usable for pod-to-pod communications in the cluster. The file also includes an ingress spec which implements the default VKE ingress controller.
-
-In the following steps after you deploy the planespotter-frontend with ingress controller, you will be able to browse from your workstation to the running planespotter app in your VKE environment even though you have not assigned a nat or public IP for the service.
-
-Ingress controllers act as a proxies, recieving http/s requests from external clients and then based on the URL hostname or path, the ingress controller will proxy the request to the corresponding back-end service. For example mysite.com/path1 and mysite.com/path2 can be routed to different backing services running in the kubernetes cluster.
-
-In the file below, no rules are specified to different paths and so accordingly, all requests sent to the host defined in the spec, your VKE SmartCluster URL, will be proxied by the ingress controller to the planespotter-frontend ClusterIP service also defined in the frontend-deployment_ingress.yaml file
-
-``` bash
----
-apiVersion: apps/v1beta1
-kind: Deployment
-metadata:
-  name: planespotter-frontend
-  namespace: planespotter
-  labels:
-    app: planespotter-frontend
-    tier: frontend
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: planespotter-frontend
-  template:
-    metadata:
-      labels:
-        app: planespotter-frontend
-        tier: frontend
-    spec:
-      containers:
-      - name: planespotter-fe
-        image: yfauser/planespotter-frontend:d0b30abec8bfdbde01a36d07b30b2a3802d9ccbb
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: PLANESPOTTER_API_ENDPOINT
-          value: planespotter-svc
-        - name: TIMEOUT_REG
-          value: "5"
-        - name: TIMEOUT_OTHER
-          value: "5"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: planespotter-frontend
-  namespace: planespotter
-  labels:
-    app: planespotter-frontend
-spec:
-  ports:
-    # the port that this service should serve on
-    - port: 80
-  selector:
-    app: planespotter-frontend
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: planespotter-frontend
-  namespace: planespotter
-spec:
-  rules:
-  - host: afewell-cluster-69fc65f8-d37d-11e8-918b-0a1dada1e740.fa2c1d78-9f00-4e30-8268-4ab81862080d.vke-user.com
-    http:
-      paths:
-      - backend:
-          serviceName: planespotter-frontend
-          servicePort: 80
-```
-
-</details>
-<br/>
-
-1.3.4 Run the updated planespotter-frontend app and verify deployment with the following commands. Make note of the external IP address/hostname shown in the output of `kubectl get services`
-
-``` bash
-kubectl create -f frontend-deployment_ingress.yaml
-kubectl get pods
-kubectl get deployments
-kubectl get services
-kubectl get ingress
-kubectl describe ingress
-```
-
-<details><summary>Screenshot 1.3.4</summary>
-<img src="media/2018-10-20-16-11-14.png">
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-22-08.png">
 </details>
 
-1.3.5 Open a browser and go to the url of your VKE SmartCluster to verify that planespotter-frontend is externally accessible with the LoadBalancer service
+## Lab Exercises
 
-<details><summary>Screenshot 5.5.5</summary>
-<img src="media/2018-10-20-16-26-46.png">
+### Inspection Types
+
+#### Conformance 
+
+This inspection ensures that a cluster conforms to official Kubernetes Specifications. This inspection can take upto 4 hours depending on the size of the cluster. Every version of Kubernetes has a different set of conformance tests that need to be run to ensure that the cluster is conformant. This is taken into consideration whenever a new conformance inspection is run. 
+
+#### Lite
+
+This inspection is a quick way to ensure that the cluster inspection component is functional. It runs a single test case and usually finishes in a couple of minutes. 
+
+#### Step 1: Open the Cluster detail page
+
+Click on Run Inspection on the cluster detail page
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-27-35.png">
 </details>
-<br/>
 
-1.3.6 Clean up the planespotter-frontend components and verify with the following commands:
+#### Step 2: Select the inspection type that you want to run 
 
-``` bash
-kubectl delete -f frontend-deployment_ingress.yaml
-kubectl get pods
-kubectl get deployments
-kubectl get services
-kubectl get ingress
-```
+Choose the type of inspection and click Run Inspection
 
-<details><summary>Screenshot 5.5.6</summary>
-<img src="media/2018-10-20-16-32-19.png">
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-30-43.png">
 </details>
-<br/>
 
-## Next Steps
+#### Step 3: Viewing an inspection
 
-This lab provided an introductory overview of Kubernetes operations. Additional topics such as persistent volumes, network policy, config maps, stateful sets and more will be covered in more detail in the ongoing labs.
+Once you have started an inspection on a cluster you can view all the inspection on that cluster by going to the inspection tab on the cluster detail page.
 
-If you are following the PKS Ninja cirriculum, [click here to proceed to the next lab](../Lab2-PksInstallationPhaseOne). As you proceed through the remaining labs you will learn more advanced details about Kubernetes using additional planespotter app components as examples and then deploy the complete planespotter application on a PKS environment.
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-31-16.png">
+</details>
 
-If you are not following the PKS Ninja cirriculum and would like to deploy the complete planespotter app on VKE, you can find [complete deployment instructions here](https://github.com/Boskey/run_kubernetes_with_vmware)
+Here you can see the lite inspection that we just started which is in progress. 
 
-### Thank you for completing the Introduction to Kubernetes Lab!
+Once the inspection is complete the result will update to either a Success or Failure. To see more detail about the inspection click on the result.
 
-### [Please click here to proceed to Lab2: PKS Installation Phase 1](../Lab2-PksInstallationPhaseOne)
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-33-28.png">
+<img src="media/2020-03-05-16-32-44.png">
+</details>
+
+In case of failure, the detailed inspection page will be able to show which test failed and a little detail about why it failed. 
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-34-26.png">
+</details>
+
+#### Step 4: Downloading the Inspection Tarball
+
+For every inspection run, you can download the tarball which will provide more detail as to what tests were run and in case of failure what was the case for the failure. 
+
+To download the inspection tarball go to the inspection tab on the cluster detail page and click Actions → Download
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-35-16.png">
+</details>
+
+#### Step 5 : Deleting an Inspection
+
+To delete an inspection navigate to the inspection detailed page.
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-36-49.png">
+<img src="media/2020-03-05-16-37-00.png">
+</details>
+
+and click Actions → Delete 
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-37-40.png">
+</details>
+
+#### Step 6: Running another Inspection
+
+Click on the Run Inspection on the Inspection Tab of the Cluster Detail page
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-38-18.png">
+</details>
+
+#### Step 7 :Viewing all the Inspections in an Org 
+
+On the left column click on the Inspection tab. This will list out all the inspections in an Org across all clusters.
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-40-22.png">
+</details>
+
+This list view also allows filtering and sorting on the columns. So for example it supports filtering out only Lite scans.
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-41-35.png">
+</details>
+
+The next image shows sorting descending based on start time. 
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-42-34.png">
+</details>
+
+### Understanding the Inspection Tarball
+
+The inspection tarball contains more in-depth information as to what tests were run, what were the failures as well as the logs generated as part of the tests that ran. 
+
+There are some files that are most relevant to figure out details about each scan
+
+<details><summary>Screenshot</summary>
+<img src="media/2020-03-05-16-44-10.png">
+</details>
+
+Within the tarball there is a subdirectory for every plugin that ran tests as part of the inspection scan. Inside that subdirectory navigate to the results folder. This folder contains the files e2e.log and junit_01.xml.
+
+- e2e.log file contains the logs that were captured from the aggregator pod running on the cluster.
+- junit_01.xml file provide detailed information on the entire list of test cases on the test suite that was run. It provides a list of all skipped, passed or failed test cases. In case of failure it will also capture the relevant logs for the test case. 
+
+
+### Validate Lab Guide
+
+If you were able to complete this lab successfully without any significant problems, please sign the [validate.md](./validate.md) file located in this directory. 
+
+If you encountered any problems or have suggestions or feature requests, please open an issue ticket on this repository. 
+
+If you have any updates or improvements for this lab guide, please open a PR with your updates.
+
+### Thank you for completing the Tanzu Mission Control - Conformance Inspections Lab Guide!
