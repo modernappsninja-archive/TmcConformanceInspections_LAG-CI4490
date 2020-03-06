@@ -2,7 +2,23 @@
 
 **Contents:**
 
-Insert TOC Here
+- [Tanzu Mission Control - Conformance Inspections Lab Guide](#tanzu-mission-control---conformance-inspections-lab-guide)
+  - [Introduction](#introduction)
+    - [Before Attempting This Lab:](#before-attempting-this-lab)
+    - [Environment Pre-Requisites](#environment-pre-requisites)
+  - [Lab Exercises](#lab-exercises)
+    - [Inspection Types](#inspection-types)
+      - [Conformance](#conformance)
+      - [Lite](#lite)
+      - [Step 1: Open the Cluster detail page](#step-1-open-the-cluster-detail-page)
+      - [Step 2: Select the inspection type that you want to run](#step-2-select-the-inspection-type-that-you-want-to-run)
+      - [Step 3: Viewing an inspection](#step-3-viewing-an-inspection)
+      - [Step 4: Downloading the Inspection Tarball](#step-4-downloading-the-inspection-tarball)
+      - [Step 5 : Deleting an Inspection](#step-5--deleting-an-inspection)
+      - [Step 6: Running another Inspection](#step-6-running-another-inspection)
+      - [Step 7 :Viewing all the Inspections in an Org](#step-7-viewing-all-the-inspections-in-an-org)
+    - [Understanding the Inspection Tarball](#understanding-the-inspection-tarball)
+    - [Validate Lab Guide](#validate-lab-guide)
 
 ## Introduction
 
@@ -160,4 +176,4 @@ If you encountered any problems or have suggestions or feature requests, please 
 
 If you have any updates or improvements for this lab guide, please open a PR with your updates.
 
-### Thank you for completing the Tanzu Mission Control - Conformance Inspections Lab Guide!
+**Thank you for completing the Tanzu Mission Control - Conformance Inspections Lab Guide!**
