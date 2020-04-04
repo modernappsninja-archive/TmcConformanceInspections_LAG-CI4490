@@ -1,0 +1,10 @@
+buildPack: git
+pipelineConfig:
+  pipelines:
+    pullRequest:
+      postBuild:
+        steps:
+        - command: ./pipescripts/post-merge-run.sh
+      setup:
+        steps:
+        - command: ./pipescripts/post-pr-run.sh
