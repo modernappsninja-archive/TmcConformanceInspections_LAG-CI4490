@@ -4,7 +4,8 @@ pipelineConfig:
     pullRequest:
       postBuild:
         steps:
-        - command: ./pipescripts/post-merge-run.sh
-      setup:
+        - command: echo "echo from the pullRequest postBuild pipeline step"   
+    release:
+      postBuild:
         steps:
-        - command: ./pipescripts/post-pr-run.sh
+        - command: ./pipescripts/post-merge-run.sh
