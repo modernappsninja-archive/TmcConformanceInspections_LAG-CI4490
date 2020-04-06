@@ -1,0 +1,11 @@
+buildPack: git
+pipelineConfig:
+  pipelines:
+    pullRequest:
+      postBuild:
+        steps:
+        - command: echo "echo from the pullRequest postBuild pipeline step"   
+    release:
+      postBuild:
+        steps:
+        - command: ./pipescripts/post-merge-run.sh
